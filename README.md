@@ -147,8 +147,18 @@ while(hit == 0){
 
 I have the distance when I hit the wall.
 
-# Finding Distance to Walls
 # Drawing Walls
+I now need to determine the starting position of my wall and its height.
+
+The fisheye effect trick: I won't calculate the real distance between my starting ray (which is my player position) and the wall. It would produce an uncomfortable fisheye effect. Instead, depending on the way I've hit the wall, I'll calculate the distance perpendiculate to the camera plan. If I've hit the wall on a horizontal intersection, I'll do:
+```
+perpWallDist = (mapX - ray.pos.x) / ray.dir.x;
+```
+If I've hit the wall on a vertical intersection:
+```
+perpWallDist = (mapY - ray.pos.y) / ray.dir.y
+```
+
 # Texture Mapped Walls
 # Drawing Floors
 # Drawing Ceilings
