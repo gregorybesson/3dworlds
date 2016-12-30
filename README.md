@@ -6,7 +6,7 @@ Raycasting + Raytracing in C
 # Creating a World
 
 - Create a 2D array of 0 and integers. Integers will represent different kinds of walls.
-
+```
 111111111111
 
 100000000001
@@ -22,6 +22,7 @@ Raycasting + Raytracing in C
 100020000001
 
 100020000001
+```
 
 # Defining Projection Attributes
 The screen will be my camera plan. The trick here is that I will parse each x pixel of the screen, looking for 
@@ -67,26 +68,84 @@ the previous calculation has been done for 1024 rays. Now it's time to find wall
 We want to calculate the initial length of the y component of ray normalized dir vector: sideDistY
 We want to calculate the distance between 2 horizontal lines following the ray normalized dir vector: deltaDistY
 This value is a constant.
-It is calculated thanks to Pythagore's theorem: deltaDistY² = 1² + length²
+It is calculated thanks to Pythagore's theorem: ```deltaDistY² = 1² + length²```
 
 ray dir is a normalized vector. We want its y component to equal 1. So we have:
+```
 1 = ray.dir.y * 1/ray.dir.x
+```
+
 1 / ray.dir.y being the multiplier to make the y vector component of ray = 1
-We have then: ray.dir.x * 1/ray.dir.y as we multiply both components vector to keep the same direction.
+We have then: ```ray.dir.x * 1/ray.dir.y``` as we multiply both components vector to keep the same direction.
 
 we deduce:
+```
 deltaDistY² = 1² + (ray.dir.x * 1/ray.dir.y)²
-
+```
+Now that we have the deltaDistY, we can easily calculate the initial length of the y component of ray normalized vector, with the following precision. the ray position at first is on edges of the square. ie. ray.pos = (1,1) means that I'm on the intersection of the 2nd column and the second row of the grid.
+So:
+```
+if (ray.dir.y < 0)
+{
+  stepY = -1;
+  sideDistY = (ray.pos.y - mapY) * deltaDistY; // = 0 !
+}
+else
+{
+  stepY = 1;
+  sideDistY = (mapY + 1.0 - ray.pos.y) * deltaDistY; // = deltaDistY
+}
+    
+ ```
+ 
 ## Finding the vertical intersections
 We do apply the same on vertical intersections. This time, we want to normalize ray.dir.x:
+```
 1 = ray.dir.x * 1/ray.dir.x
+```
+
 we then have the new y component of the vector:
+```
 ray.dir.y X 1/ray.dir.x
+```
 
 And Pythagore being applied:
+```
 deltaDistX² = (ray.dir.y X 1/ray.dir.x)² + 1
+```
+Now that we have the deltaDistX:
+
+```
+if (ray.dir.x < 0)
+{
+  stepX = -1;
+  sideDistX = (ray.pos.x - mapX) * deltaDistX; // = 0 !
+}
+else
+{
+  stepX = 1;
+  sideDistX = (mapX + 1.0 - ray.pos.x) * deltaDistX; // = deltaDistX
+}
+    
+ ```
 
 ## The wall
+It's time to test the wall hit: We advance the ray step by step with the DDA algorithm:
+```
+int hit = 0;
+while(hit == 0){
+  if(sideDistX < sideDistY) {
+    sideDistX += deltaDistX;
+    mapX += stepX;
+  } else {
+    sideDistY += deltaDistY;
+    mapY += stepY;
+  }
+  if (MAP[mapX][mapY] > 0) hit = 1;
+}
+```
+
+I have the distance when I hit the wall.
 
 # Finding Distance to Walls
 # Drawing Walls
