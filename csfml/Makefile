@@ -1,0 +1,65 @@
+DEBUG =	no
+
+SRC = ./csfml-3.c
+
+NAME = csfml
+
+ifeq ($(DEBUG), yes)
+		CFLAGS = $(HEAD) -W -Wall -pedantic -g
+else
+		CFLAGS = $(HEAD)
+endif
+
+CC = gcc
+
+RM = rm -f
+
+INC = -I./include \
+		-I.
+LIB =	-L./lib \
+		-lcsfml-audio \
+		-lcsfml-graphics \
+		-lcsfml-window \
+		-lcsfml-system \
+		-lstdc++ -ldl	\
+		-lm
+
+OBJ = $(SRC:.c=.o)
+
+$(NAME):	$(OBJ)
+ifeq ($(DEBUG), yes)
+	@tput setaf 1; tput bold
+	@echo "  ____  _____ ____  _   _  ____ ";
+	@echo " |  _ \| ____| __ )| | | |/ ___|";
+	@echo " | | | |  _| |  _ \| | | | |  _ ";
+	@echo " | |_| | |___| |_) | |_| | |_| |";
+	@echo " |____/|_____|____/ \___/ \____|";
+	@echo "                                ";
+	@tput sgr0
+endif
+	@echo "Compiling ..."
+	@$(CC) $(OBJ) -o $(NAME) $(INC) $(LIB)
+	@tput setaf 2; tput bold; echo "OK"
+	@tput sgr0
+
+
+%.o: %.c
+	@$(CC) -o $@ -c $< $(CFLAGS) $(INC)
+
+all:	$(NAME)
+
+clean:
+	@echo "Removing OBJ files ..."
+	@$(RM) $(OBJ)
+	@tput setaf 2; tput bold; echo "OK"
+	@tput sgr0
+
+fclean:	clean
+	@echo "Deleting" $(NAME) "..."
+	@$(RM) $(NAME)
+	@tput setaf 2; tput bold; echo "OK"
+	@tput sgr0
+
+re:	fclean all
+
+.PHONY:	all clean fclean re
